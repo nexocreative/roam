@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sicilia 2025 — Cuaderno de Viaje</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600&family=Dancing+Script:wght@600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="site-header">
+    <div class="header-bg"></div>
+    <div class="header-content">
+      <span class="header-label">Cuaderno de Viaje</span>
+      <h1 class="header-title">Sicilia <span class="header-year">2025</span></h1>
+      <p class="header-dates">1 — 8 de Julio</p>
+      <div class="header-stats">
+        <div class="stat"><span class="stat-num" id="total-places">0</span><span class="stat-label">Lugares</span></div>
+        <div class="stat-divider"></div>
+        <div class="stat"><span class="stat-num" id="total-tickets">0</span><span class="stat-label">Entradas</span></div>
+        <div class="stat-divider"></div>
+        <div class="stat"><span class="stat-num">8</span><span class="stat-label">Días</span></div>
+      </div>
+      <div class="sync-badge" id="sync-badge"></div>
+    </div>
+    <div class="header-wave">
+      <svg viewBox="0 0 1440 54" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+        <path d="M0 54L60 45C120 36 240 18 360 13.5C480 9 600 18 720 22.5C840 27 960 27 1080 22.5C1200 18 1320 9 1380 4.5L1440 0V54H1380C1320 54 1200 54 1080 54C960 54 840 54 720 54C600 54 480 54 360 54C240 54 120 54 60 54H0Z" fill="#f8fafb"/>
+      </svg>
+    </div>
+  </header>
+
+  <!-- MAIN -->
+  <main class="main-layout">
+
+    <!-- DAYS PANEL -->
+    <section class="days-panel">
+      <div class="days-nav" id="days-nav"></div>
+      <div class="days-content" id="days-content"></div>
+    </section>
+
+    <!-- MAP PANEL -->
+    <aside class="map-panel">
+      <div class="map-header">
+        <span class="map-title">Mapa del Viaje</span>
+        <div class="map-legend">
+          <span class="legend-dot legend-visited"></span> Visitado
+          <span class="legend-dot legend-pending"></span> Pendiente
+        </div>
+      </div>
+      <div id="map"></div>
+      <div class="map-info" id="map-info">
+        <p>Haz clic en un marcador para ver detalles</p>
+      </div>
+    </aside>
+
+  </main>
+
+  <!-- MODAL: Añadir lugar -->
+  <div class="modal-overlay" id="modal-overlay">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 class="modal-title">Añadir Lugar</h2>
+        <button class="modal-close" id="modal-close">✕</button>
+      </div>
+      <form id="place-form">
+        <input type="hidden" id="form-day" />
+        <input type="hidden" id="form-edit-id" />
+
+        <div class="form-group">
+          <label>Nombre del lugar *</label>
+          <input type="text" id="form-name" placeholder="Ej: Valle dei Templi" required />
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Hora (opcional)</label>
+            <input type="time" id="form-time" />
+          </div>
+          <div class="form-group">
+            <label>Categoría</label>
+            <select id="form-category">
+              <option value="cultura">🏛 Cultura</option>
+              <option value="naturaleza">🌿 Naturaleza</option>
+              <option value="gastronomia">🍕 Gastronomía</option>
+              <option value="playa">🏖 Playa</option>
+              <option value="alojamiento">🏨 Alojamiento</option>
+              <option value="transporte">🚗 Transporte</option>
+              <option value="otro">📍 Otro</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Notas</label>
+          <textarea id="form-notes" placeholder="Notas, horarios, consejos..." rows="3"></textarea>
+        </div>
+
+        <div class="form-group tickets-group">
+          <label class="checkbox-label">
+            <input type="checkbox" id="form-tickets" />
+            <span class="checkbox-custom"></span>
+            Requiere entrada / reserva previa
+          </label>
+          <input type="text" id="form-ticket-info" class="ticket-info-input" placeholder="Info de la entrada (precio, web, etc.)" />
+        </div>
+
+        <div class="form-group">
+          <label>Ubicación en el mapa</label>
+          <div class="location-search">
+            <input type="text" id="form-location-search" placeholder="Buscar lugar..." />
+            <button type="button" class="btn-search" id="btn-location-search">Buscar</button>
+          </div>
+          <div class="coords-display" id="coords-display">Sin ubicación</div>
+          <div id="mini-map"></div>
+        </div>
+
+        <div class="form-group">
+          <label class="checkbox-label">
+            <input type="checkbox" id="form-visited" />
+            <span class="checkbox-custom"></span>
+            Marcar como visitado ✓
+          </label>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn btn-secondary" id="btn-cancel">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Guardar Lugar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
