@@ -72,11 +72,11 @@ function setSyncStatus(status) {
    PERSISTENCE — localStorage
 ======================================== */
 function saveLocal() {
-  localStorage.setItem('sicilia-2025', JSON.stringify(state.days));
+  localStorage.setItem('sicilia-2026', JSON.stringify(state.days));
 }
 
 function loadLocal() {
-  const raw = localStorage.getItem('sicilia-2025');
+  const raw = localStorage.getItem('sicilia-2026');
   if (raw) {
     try { state.days = JSON.parse(raw); } catch (e) { state.days = {}; }
   }
