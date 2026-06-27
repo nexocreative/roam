@@ -372,8 +372,9 @@ function renderPlaceItem(place, dayNum) {
           </div>
           <div class="place-name ${place.visited ? 'visited-name' : ''}">${escHtml(place.name)}</div>
           ${place.notes ? `<div class="place-notes">${escHtml(place.notes)}</div>` : ''}
-          <div style="display:flex;flex-wrap:wrap;gap:0">
-            ${place.tickets ? `<div class="place-tickets">🎟 Entrada${place.ticketPrice ? ' · ' + escHtml(place.ticketPrice) : ''}${place.ticketWeb ? ` · <a class="ticket-web-link" href="${place.ticketWeb.startsWith('http') ? place.ticketWeb : 'https://' + place.ticketWeb}" target="_blank" rel="noopener">🔗 ${escHtml(urlDisplay(place.ticketWeb))}</a>` : ''}</div>` : ''}
+          <div class="place-chips">
+            ${place.tickets ? `<span class="place-tickets">🎟 Entrada${place.ticketPrice ? ' · ' + escHtml(place.ticketPrice) : ''}</span>` : ''}
+            ${place.tickets && place.ticketWeb ? `<a class="chip-link" href="${place.ticketWeb.startsWith('http') ? place.ticketWeb : 'https://' + place.ticketWeb}" target="_blank" rel="noopener">🔗 ${escHtml(urlDisplay(place.ticketWeb))}</a>` : ''}
             ${place.coords  ? `<button class="place-location-btn" onclick="flyToPlace(getPlace(${dayNum},'${place.id}'))">🗺 Ver en mapa</button>` : ''}
           </div>
         </div>
