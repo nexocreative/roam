@@ -753,6 +753,12 @@ input[type="checkbox"]:checked + .checkbox-custom::after { content: '✓'; color
 .ticket-info-input { display: none; margin-top: 10px; grid-template-columns: 1fr 1fr; gap: 12px; }
 .ticket-info-input.visible { display: grid; }
 
+.ticket-web-row { display: inline-flex; align-items: center; gap: 4px; margin-left: 6px; }
+.ticket-web-link { color: var(--teal); font-size: .8rem; text-decoration: none; }
+.ticket-web-link:hover { text-decoration: underline; }
+.btn-copy { background: var(--gray-100); border: 1px solid var(--gray-200); border-radius: 6px; padding: 1px 6px; font-size: .78rem; cursor: pointer; color: var(--gray-600); line-height: 1.4; }
+.btn-copy:hover { background: var(--gray-200); }
+
 .location-search { display: flex; gap: 8px; }
 .location-search input { flex: 1; }
 
