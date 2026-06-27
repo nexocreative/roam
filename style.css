@@ -659,13 +659,28 @@ body {
 .modal {
   background: var(--white);
   border-radius: var(--radius);
+  overflow: hidden;
   width: 100%;
   max-width: 520px;
   max-height: 90vh;
-  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
   box-shadow: var(--shadow-lg);
   transform: translateY(20px) scale(.98);
   transition: transform .25s ease;
+}
+
+#place-form {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow: hidden;
+}
+
+.form-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px 24px 4px;
 }
 
 .modal-overlay.open .modal { transform: translateY(0) scale(1); }
@@ -709,7 +724,8 @@ body {
   gap: 14px;
 }
 
-.form-group { display: flex; flex-direction: column; gap: 6px; }
+.form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
+.form-group:last-child { margin-bottom: 0; }
 .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 
 label {
@@ -811,7 +827,13 @@ input[type="checkbox"]:checked + .checkbox-custom::after { content: '✓'; color
   margin-top: 8px;
 }
 
-.form-actions { display: flex; gap: 10px; padding-top: 4px; }
+.form-actions {
+  display: flex;
+  gap: 10px;
+  padding: 10px 24px;
+  border-top: 1px solid var(--gray-100);
+  background: var(--white);
+}
 
 .btn {
   flex: 1;

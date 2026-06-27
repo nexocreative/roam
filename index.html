@@ -86,72 +86,74 @@
         <button class="modal-close" id="modal-close">✕</button>
       </div>
       <form id="place-form">
-        <input type="hidden" id="form-day" />
-        <input type="hidden" id="form-edit-id" />
+        <div class="form-scroll">
+          <input type="hidden" id="form-day" />
+          <input type="hidden" id="form-edit-id" />
 
-        <div class="form-group">
-          <label>Nombre del lugar *</label>
-          <input type="text" id="form-name" placeholder="Ej: Valle dei Templi" required />
-        </div>
-
-        <div class="form-row">
           <div class="form-group">
-            <label>Hora (opcional)</label>
-            <input type="time" id="form-time" />
+            <label>Nombre del lugar *</label>
+            <input type="text" id="form-name" placeholder="Ej: Valle dei Templi" required />
           </div>
-          <div class="form-group">
-            <label>Categoría</label>
-            <select id="form-category">
-              <option value="cultura">🏛 Cultura</option>
-              <option value="naturaleza">🌿 Naturaleza</option>
-              <option value="gastronomia">🍕 Gastronomía</option>
-              <option value="playa">🏖 Playa</option>
-              <option value="alojamiento">🏨 Alojamiento</option>
-              <option value="transporte">🚗 Transporte</option>
-              <option value="otro">📍 Otro</option>
-            </select>
-          </div>
-        </div>
 
-        <div class="form-group">
-          <label>Notas</label>
-          <textarea id="form-notes" placeholder="Notas, horarios, consejos..." rows="3"></textarea>
-        </div>
-
-        <div class="form-group tickets-group">
-          <label class="checkbox-label">
-            <input type="checkbox" id="form-tickets" />
-            <span class="checkbox-custom"></span>
-            Requiere entrada / reserva previa
-          </label>
-          <div class="ticket-info-input form-row">
+          <div class="form-row">
             <div class="form-group">
-              <label>Precio</label>
-              <input type="text" id="form-ticket-price" placeholder="Ej: 12€/persona" />
+              <label>Hora (opcional)</label>
+              <input type="time" id="form-time" />
             </div>
             <div class="form-group">
-              <label>Web / Reserva</label>
-              <input type="text" id="form-ticket-web" placeholder="Ej: coopculture.it" />
+              <label>Categoría</label>
+              <select id="form-category">
+                <option value="cultura">🏛 Cultura</option>
+                <option value="naturaleza">🌿 Naturaleza</option>
+                <option value="gastronomia">🍕 Gastronomía</option>
+                <option value="playa">🏖 Playa</option>
+                <option value="alojamiento">🏨 Alojamiento</option>
+                <option value="transporte">🚗 Transporte</option>
+                <option value="otro">📍 Otro</option>
+              </select>
             </div>
           </div>
-        </div>
 
-        <div class="form-group">
-          <label>Ubicación en el mapa</label>
-          <div class="location-search">
-            <input type="text" id="form-location-search" placeholder="Buscar lugar..." />
-            <button type="button" class="btn-search" id="btn-location-search">Buscar</button>
+          <div class="form-group">
+            <label>Notas</label>
+            <textarea id="form-notes" placeholder="Notas, horarios, consejos..." rows="3"></textarea>
           </div>
-          <div class="coords-display" id="coords-display">Sin ubicación</div>
-          <div id="mini-map"></div>
-        </div>
 
-        <div class="form-group">
-          <label class="checkbox-label">
-            <input type="checkbox" id="form-visited" />
-            <span class="checkbox-custom"></span>
-            Marcar como visitado ✓
-          </label>
+          <div class="form-group tickets-group">
+            <label class="checkbox-label">
+              <input type="checkbox" id="form-tickets" />
+              <span class="checkbox-custom"></span>
+              Requiere entrada / reserva previa
+            </label>
+            <div class="ticket-info-input form-row">
+              <div class="form-group">
+                <label>Precio</label>
+                <input type="text" id="form-ticket-price" placeholder="Ej: 12€/persona" />
+              </div>
+              <div class="form-group">
+                <label>Web / Reserva</label>
+                <input type="text" id="form-ticket-web" placeholder="Ej: coopculture.it" />
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Ubicación en el mapa</label>
+            <div class="location-search">
+              <input type="text" id="form-location-search" placeholder="Buscar lugar..." />
+              <button type="button" class="btn-search" id="btn-location-search">Buscar</button>
+            </div>
+            <div class="coords-display" id="coords-display">Sin ubicación</div>
+            <div id="mini-map"></div>
+          </div>
+
+          <div class="form-group">
+            <label class="checkbox-label">
+              <input type="checkbox" id="form-visited" />
+              <span class="checkbox-custom"></span>
+              Marcar como visitado ✓
+            </label>
+          </div>
         </div>
 
         <div class="form-actions">
