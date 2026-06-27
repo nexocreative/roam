@@ -750,8 +750,8 @@ input[type="checkbox"] { display: none; }
 input[type="checkbox"]:checked + .checkbox-custom { background: var(--teal); border-color: var(--teal); }
 input[type="checkbox"]:checked + .checkbox-custom::after { content: '✓'; color: white; font-size: .72rem; font-weight: 700; }
 
-.ticket-info-input { display: none; margin-top: 8px; }
-.ticket-info-input.visible { display: block; }
+.ticket-info-input { display: none; margin-top: 10px; grid-template-columns: 1fr 1fr; gap: 12px; }
+.ticket-info-input.visible { display: grid; }
 
 .location-search { display: flex; gap: 8px; }
 .location-search input { flex: 1; }

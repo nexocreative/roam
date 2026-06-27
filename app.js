@@ -373,7 +373,7 @@ function renderPlaceItem(place, dayNum) {
           <div class="place-name ${place.visited ? 'visited-name' : ''}">${escHtml(place.name)}</div>
           ${place.notes ? `<div class="place-notes">${escHtml(place.notes)}</div>` : ''}
           <div style="display:flex;flex-wrap:wrap;gap:0">
-            ${place.tickets ? `<div class="place-tickets">🎟 Entrada${place.ticketInfo ? ': ' + escHtml(place.ticketInfo) : ''}</div>` : ''}
+            ${place.tickets ? `<div class="place-tickets">🎟 Entrada${place.ticketPrice ? ' · ' + escHtml(place.ticketPrice) : ''}${place.ticketWeb ? ' · <a href="' + (place.ticketWeb.startsWith('http') ? '' : 'https://') + escHtml(place.ticketWeb) + '" target="_blank" style="color:inherit">' + escHtml(place.ticketWeb) + '</a>' : ''}</div>` : ''}
             ${place.coords  ? `<button class="place-location-btn" onclick="flyToPlace(getPlace(${dayNum},'${place.id}'))">🗺 Ver en mapa</button>` : ''}
           </div>
         </div>
@@ -473,7 +473,8 @@ function openModal(dayNum, placeData) {
     document.getElementById('form-category').value  = placeData.category  || 'cultura';
     document.getElementById('form-notes').value     = placeData.notes     || '';
     document.getElementById('form-tickets').checked = !!placeData.tickets;
-    document.getElementById('form-ticket-info').value = placeData.ticketInfo || '';
+    document.getElementById('form-ticket-price').value = placeData.ticketPrice || '';
+    document.getElementById('form-ticket-web').value   = placeData.ticketWeb   || '';
     document.getElementById('form-visited').checked = !!placeData.visited;
     if (placeData.tickets) document.querySelector('.ticket-info-input').classList.add('visible');
     if (placeData.coords) { formCoords = placeData.coords; updateCoordsDisplay(); }
@@ -570,8 +571,9 @@ document.getElementById('place-form').addEventListener('submit', e => {
     time:       document.getElementById('form-time').value,
     category:   document.getElementById('form-category').value,
     notes:      document.getElementById('form-notes').value.trim(),
-    tickets:    document.getElementById('form-tickets').checked,
-    ticketInfo: document.getElementById('form-ticket-info').value.trim(),
+    tickets:      document.getElementById('form-tickets').checked,
+    ticketPrice:  document.getElementById('form-ticket-price').value.trim(),
+    ticketWeb:    document.getElementById('form-ticket-web').value.trim(),
     visited:    document.getElementById('form-visited').checked,
     coords:     formCoords ? { ...formCoords } : null,
   };
