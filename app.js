@@ -509,9 +509,6 @@ function closeModal() {
 
 document.getElementById('modal-close').addEventListener('click', closeModal);
 document.getElementById('btn-cancel').addEventListener('click', closeModal);
-document.getElementById('modal-overlay').addEventListener('click', e => {
-  if (e.target === document.getElementById('modal-overlay')) closeModal();
-});
 
 document.getElementById('form-tickets').addEventListener('change', e => {
   document.querySelector('.ticket-info-input').classList.toggle('visible', e.target.checked);
