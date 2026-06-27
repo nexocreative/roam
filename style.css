@@ -754,7 +754,7 @@ input[type="checkbox"]:checked + .checkbox-custom::after { content: '✓'; color
 .ticket-info-input.visible { display: grid; }
 
 .ticket-web-row { display: inline-flex; align-items: center; gap: 4px; margin-left: 6px; }
-.ticket-web-link { color: var(--teal); font-size: .8rem; text-decoration: none; }
+.ticket-web-link { color: var(--teal); font-size: .8rem; text-decoration: none; max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: inline-block; vertical-align: middle; }
 .ticket-web-link:hover { text-decoration: underline; }
 .btn-copy { background: var(--gray-100); border: 1px solid var(--gray-200); border-radius: 6px; padding: 1px 6px; font-size: .78rem; cursor: pointer; color: var(--gray-600); line-height: 1.4; }
 .btn-copy:hover { background: var(--gray-200); }
