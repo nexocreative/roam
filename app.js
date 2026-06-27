@@ -4,14 +4,14 @@
 ======================================== */
 
 const DAYS = [
-  { num: 1, date: '1 Jul', label: 'Llegada',     weekday: 'Martes' },
-  { num: 2, date: '2 Jul', label: 'Día 2',        weekday: 'Miércoles' },
-  { num: 3, date: '3 Jul', label: 'Día 3',        weekday: 'Jueves' },
-  { num: 4, date: '4 Jul', label: 'Día 4',        weekday: 'Viernes' },
-  { num: 5, date: '5 Jul', label: 'Día 5',        weekday: 'Sábado' },
-  { num: 6, date: '6 Jul', label: 'Día 6',        weekday: 'Domingo' },
-  { num: 7, date: '7 Jul', label: 'Día 7',        weekday: 'Lunes' },
-  { num: 8, date: '8 Jul', label: 'Último día',   weekday: 'Martes' },
+  { num: 1, date: '1', label: 'Llegada',     weekday: 'Martes' },
+  { num: 2, date: '2', label: 'Día 2',        weekday: 'Miércoles' },
+  { num: 3, date: '3', label: 'Día 3',        weekday: 'Jueves' },
+  { num: 4, date: '4', label: 'Día 4',        weekday: 'Viernes' },
+  { num: 5, date: '5', label: 'Día 5',        weekday: 'Sábado' },
+  { num: 6, date: '6', label: 'Día 6',        weekday: 'Domingo' },
+  { num: 7, date: '7', label: 'Día 7',        weekday: 'Lunes' },
+  { num: 8, date: '8', label: 'Último día',   weekday: 'Martes' },
 ];
 
 const CAT_ICONS = {
@@ -73,6 +73,7 @@ function setSyncStatus(status) {
 ======================================== */
 function saveLocal() {
   localStorage.setItem('sicilia-2026', JSON.stringify(state.days));
+  localStorage.setItem('sicilia-active-day', state.activeDay);
 }
 
 function loadLocal() {
@@ -81,8 +82,10 @@ function loadLocal() {
     try { state.days = JSON.parse(raw); } catch (e) { state.days = {}; }
   }
   DAYS.forEach(d => {
-    if (!state.days[d.num]) state.days[d.num] = { notes: '', places: [] };
+    if (!state.days[d.num]) state.days[d.num] = { notes: '', places: [], label: d.label };
   });
+  const savedDay = parseInt(localStorage.getItem('sicilia-active-day'));
+  if (savedDay && DAYS.find(d => d.num === savedDay)) state.activeDay = savedDay;
 }
 
 /* ========================================
@@ -96,19 +99,20 @@ async function loadFromSupabase() {
     if (error) throw error;
     if (data && data.length > 0) {
       data.forEach(row => {
+        const defaultLabel = DAYS.find(d => d.num === row.day_num)?.label || '';
         state.days[row.day_num] = {
           notes:  row.notes  || '',
           places: row.places || [],
+          label:  row.label  || defaultLabel,
         };
       });
       DAYS.forEach(d => {
-        if (!state.days[d.num]) state.days[d.num] = { notes: '', places: [] };
+        if (!state.days[d.num]) state.days[d.num] = { notes: '', places: [], label: d.label };
       });
       saveLocal();
       setSyncStatus('ok');
       return true;
     }
-    // Primera vez: inicializar filas en Supabase con los datos locales
     await pushAllToSupabase();
     setSyncStatus('ok');
     return true;
@@ -125,6 +129,7 @@ async function pushAllToSupabase() {
     day_num: d.num,
     notes:   state.days[d.num]?.notes  || '',
     places:  state.days[d.num]?.places || [],
+    label:   state.days[d.num]?.label  || d.label,
   }));
   const { error } = await db.from('itinerary').upsert(rows, { onConflict: 'day_num' });
   if (error) throw error;
@@ -139,6 +144,7 @@ async function saveDay(dayNum) {
       day_num: dayNum,
       notes:   state.days[dayNum].notes,
       places:  state.days[dayNum].places,
+      label:   state.days[dayNum].label || '',
     }, { onConflict: 'day_num' });
     if (error) throw error;
     setSyncStatus('ok');
@@ -153,7 +159,6 @@ function saveState(dayNum) {
   if (dayNum) {
     saveDay(dayNum);
   } else {
-    // Guardar todos los días (para notas)
     saveLocal();
     if (db) {
       pushAllToSupabase()
@@ -174,6 +179,8 @@ function initMap() {
     attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
     maxZoom: 19,
   }).addTo(map);
+
+  new ResizeObserver(() => map.invalidateSize()).observe(document.getElementById('map'));
 }
 
 function initMiniMap() {
@@ -247,28 +254,81 @@ function flyToPlace(place) {
    UI: DAYS NAV
 ======================================== */
 function renderDaysNav() {
-  const nav = document.getElementById('days-nav');
-  nav.innerHTML = '';
-  DAYS.forEach(day => {
-    const count = (state.days[day.num]?.places || []).length;
-    const btn = document.createElement('button');
-    btn.className = `day-tab ${state.activeDay === day.num ? 'active' : ''}`;
-    btn.dataset.day = day.num;
-    btn.innerHTML = `${count > 0 ? '<span class="tab-dot"></span>' : ''}Día ${day.num}`;
-    btn.addEventListener('click', () => setActiveDay(day.num));
-    nav.appendChild(btn);
+  ['days-nav', 'days-nav-sticky'].forEach(id => {
+    const nav = document.getElementById(id);
+    if (!nav) return;
+    nav.innerHTML = '';
+    DAYS.forEach(day => {
+      const count = (state.days[day.num]?.places || []).length;
+      const btn = document.createElement('button');
+      btn.className = `day-tab ${state.activeDay === day.num ? 'active' : ''}`;
+      btn.dataset.day = day.num;
+      btn.innerHTML = `${count > 0 ? '<span class="tab-dot"></span>' : ''}Día ${day.num}`;
+      btn.addEventListener('click', () => setActiveDay(day.num));
+      nav.appendChild(btn);
+    });
   });
 }
 
 function setActiveDay(num) {
   state.activeDay = num;
+  localStorage.setItem('sicilia-active-day', num);
   renderDaysNav();
+  renderDayHeader();
   renderDaysContent();
+  document.querySelector('.main-wrapper').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 /* ========================================
    UI: DAYS CONTENT
 ======================================== */
+function renderDayHeader() {
+  const day      = DAYS.find(d => d.num === state.activeDay);
+  const dayData  = state.days[day.num];
+  const label    = dayData?.label || day.label;
+  const bar      = document.getElementById('day-header-bar');
+
+  bar.innerHTML = `
+    <div class="day-header">
+      <div class="day-info">
+        <div class="day-title-row">
+          <h2 class="day-title" id="day-title-text">${escHtml(label)}</h2>
+          <button class="day-title-edit-btn" id="day-title-edit" title="Editar nombre del día">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
+          </button>
+        </div>
+        <div class="day-date">${day.weekday}, ${day.date} de Julio</div>
+      </div>
+      <button class="btn-add-place" data-day="${day.num}">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+          <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+        </svg>
+        Añadir lugar
+      </button>
+    </div>
+  `;
+
+  bar.querySelector('.btn-add-place').addEventListener('click', () => openAddModal(day.num));
+
+  bar.querySelector('#day-title-edit').addEventListener('click', () => {
+    const titleEl = bar.querySelector('#day-title-text');
+    const current = dayData?.label || day.label;
+    titleEl.outerHTML = `<input class="day-title-input" id="day-title-input" value="${escHtml(current)}" maxlength="40" />`;
+    const input = bar.querySelector('#day-title-input');
+    input.focus();
+    input.select();
+    const save = () => {
+      const val = input.value.trim() || day.label;
+      if (!state.days[day.num]) state.days[day.num] = { notes: '', places: [] };
+      state.days[day.num].label = val;
+      saveState(day.num);
+      renderDayHeader();
+    };
+    input.addEventListener('blur', save);
+    input.addEventListener('keydown', e => { if (e.key === 'Enter') input.blur(); if (e.key === 'Escape') { input.value = current; input.blur(); } });
+  });
+}
+
 function renderDaysContent() {
   const container = document.getElementById('days-content');
   container.innerHTML = '';
@@ -279,19 +339,6 @@ function renderDaysContent() {
     card.className = `day-card ${state.activeDay === day.num ? 'active' : ''}`;
     card.id = `day-card-${day.num}`;
     card.innerHTML = `
-      <div class="day-header">
-        <div class="day-info">
-          <span class="day-number">Día ${day.num}</span>
-          <h2 class="day-title">${escHtml(day.label)}</h2>
-          <div class="day-date">${day.weekday}, ${day.date} de Julio</div>
-        </div>
-        <button class="btn-add-place" data-day="${day.num}">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
-            <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
-          </svg>
-          Añadir lugar
-        </button>
-      </div>
       <div class="places-list" id="places-${day.num}">
         ${places.length === 0 ? renderEmptyDay() : places.map(p => renderPlaceItem(p, day.num)).join('')}
       </div>
@@ -332,7 +379,7 @@ function renderPlaceItem(place, dayNum) {
         </div>
         <div class="place-actions">
           <button class="action-btn done-btn"   title="Marcar visitado" onclick="toggleVisited(${dayNum},'${place.id}')">${place.visited ? '↩' : '✓'}</button>
-          <button class="action-btn"            title="Editar"          onclick="openEditModal(${dayNum},'${place.id}')">✏</button>
+          <button class="action-btn"            title="Editar"          onclick="openEditModal(${dayNum},'${place.id}')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg></button>
           <button class="action-btn delete-btn" title="Eliminar"        onclick="deletePlace(${dayNum},'${place.id}')">✕</button>
         </div>
       </div>
@@ -341,9 +388,6 @@ function renderPlaceItem(place, dayNum) {
 }
 
 function bindDayCardEvents() {
-  document.querySelectorAll('.btn-add-place').forEach(btn => {
-    btn.addEventListener('click', () => openAddModal(parseInt(btn.dataset.day)));
-  });
   document.querySelectorAll('.day-notes-input').forEach(ta => {
     let timer;
     ta.addEventListener('input', () => {
@@ -372,11 +416,23 @@ function toggleVisited(dayNum, placeId) {
 }
 
 function deletePlace(dayNum, placeId) {
-  if (!confirm('¿Eliminar este lugar?')) return;
-  state.days[dayNum].places = state.days[dayNum].places.filter(p => p.id !== placeId);
-  if (state.markers[placeId]) { map.removeLayer(state.markers[placeId]); delete state.markers[placeId]; }
-  saveState(dayNum);
-  refreshAfterChange();
+  showConfirm(() => {
+    state.days[dayNum].places = state.days[dayNum].places.filter(p => p.id !== placeId);
+    if (state.markers[placeId]) { map.removeLayer(state.markers[placeId]); delete state.markers[placeId]; }
+    saveState(dayNum);
+    refreshAfterChange();
+  });
+}
+
+function showConfirm(onOk) {
+  const overlay = document.getElementById('confirm-overlay');
+  overlay.classList.add('open');
+  const ok     = document.getElementById('confirm-ok');
+  const cancel = document.getElementById('confirm-cancel');
+  const close  = () => overlay.classList.remove('open');
+  ok.onclick     = () => { close(); onOk(); };
+  cancel.onclick = close;
+  overlay.onclick = e => { if (e.target === overlay) close(); };
 }
 
 function openEditModal(dayNum, placeId) {
@@ -388,6 +444,7 @@ function openEditModal(dayNum, placeId) {
 
 function refreshAfterChange() {
   renderDaysNav();
+  renderDayHeader();
   renderDaysContent();
   refreshMapMarkers();
   updateStats();
@@ -480,10 +537,10 @@ async function searchLocation(query) {
       updateCoordsDisplay(data[0].display_name);
       placeMiniMarker(formCoords.lat, formCoords.lng);
     } else {
-      alert('No se encontró la ubicación. Intenta con otro nombre o haz clic directamente en el mapa.');
+      document.getElementById('coords-display').textContent = 'No encontrado. Prueba otro nombre o haz clic en el mapa.';
     }
   } catch {
-    alert('Error al buscar. Comprueba tu conexión.');
+    document.getElementById('coords-display').textContent = 'Error de conexión. Inténtalo de nuevo.';
   } finally {
     btn.textContent = 'Buscar';
     btn.disabled = false;
@@ -563,9 +620,10 @@ function formatCategory(cat) {
    INIT
 ======================================== */
 async function init() {
-  loadLocal(); // carga instantánea desde localStorage
+  loadLocal();
   initMap();
   renderDaysNav();
+  renderDayHeader();
   renderDaysContent();
   refreshMapMarkers();
   updateStats();
@@ -573,8 +631,8 @@ async function init() {
   if (SUPABASE_READY) {
     const synced = await loadFromSupabase();
     if (synced) {
-      // Re-render con los datos de Supabase (pueden ser más recientes)
       renderDaysNav();
+      renderDayHeader();
       renderDaysContent();
       refreshMapMarkers();
       updateStats();
