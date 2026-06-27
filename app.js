@@ -185,6 +185,7 @@ function initMap() {
 
 function initMiniMap() {
   miniMap = L.map('mini-map', { center: [37.5, 14.0], zoom: 8, zoomControl: false });
+  L.control.zoom({ position: 'bottomright' }).addTo(miniMap);
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(miniMap);
   miniMap.on('click', (e) => {
     formCoords = { lat: e.latlng.lat, lng: e.latlng.lng };
