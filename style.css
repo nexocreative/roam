@@ -856,11 +856,19 @@ input[type="checkbox"]:checked + .checkbox-custom::after { content: '✓'; color
    RESPONSIVE
 ======================================== */
 @media (max-width: 960px) {
-  .content-grid { grid-template-columns: 1fr; }
-  .map-panel { position: relative; height: 380px; }
+  .content-grid {
+    grid-template-columns: 1fr;
+    padding-right: 0;
+    gap: 0;
+  }
+  .map-panel {
+    position: relative;
+    height: 400px;
+    width: 100%;
+  }
   .hero-top { padding: 20px 20px 0; }
   .hero-center { padding: 0 20px; }
   .hero-days { padding: 0 20px; }
   .top-bar { padding: 0 20px; }
-  .places-panel { padding: 20px; }
+  .places-panel { padding: 20px 20px 32px; }
 }
