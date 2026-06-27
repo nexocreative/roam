@@ -373,7 +373,7 @@ function renderPlaceItem(place, dayNum) {
           <div class="place-name ${place.visited ? 'visited-name' : ''}">${escHtml(place.name)}</div>
           ${place.notes ? `<div class="place-notes">${escHtml(place.notes)}</div>` : ''}
           <div style="display:flex;flex-wrap:wrap;gap:0">
-            ${place.tickets ? `<div class="place-tickets">🎟 Entrada${place.ticketPrice ? ' · ' + escHtml(place.ticketPrice) : ''}${place.ticketWeb ? `<span class="ticket-web-row"><a class="ticket-web-link" href="${place.ticketWeb.startsWith('http') ? place.ticketWeb : 'https://' + place.ticketWeb}" target="_blank" rel="noopener">🔗 ${escHtml(place.ticketWeb)}</a><button class="btn-copy" title="Copiar enlace" onclick="navigator.clipboard.writeText('${place.ticketWeb.startsWith('http') ? place.ticketWeb : 'https://' + place.ticketWeb}').then(()=>{this.textContent='✓';setTimeout(()=>this.textContent='⎘',1200)})">⎘</button></span>` : ''}</div>` : ''}
+            ${place.tickets ? `<div class="place-tickets">🎟 Entrada${place.ticketPrice ? ' · ' + escHtml(place.ticketPrice) : ''}${place.ticketWeb ? ` · <a class="ticket-web-link" href="${place.ticketWeb.startsWith('http') ? place.ticketWeb : 'https://' + place.ticketWeb}" target="_blank" rel="noopener">🔗 ${escHtml(place.ticketWeb)}</a>` : ''}</div>` : ''}
             ${place.coords  ? `<button class="place-location-btn" onclick="flyToPlace(getPlace(${dayNum},'${place.id}'))">🗺 Ver en mapa</button>` : ''}
           </div>
         </div>
